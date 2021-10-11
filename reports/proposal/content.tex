@@ -1,0 +1,39 @@
+\chapter*{Introduction}
+\addcontentsline{toc}{chapter}{Introduction}
+
+Jacob recommended viewing \cite{riscv} as a starting point.
+
+\chapter*{Appendix}
+\addcontentsline{toc}{chapter}{Appendix}
+\subsection*{Example Python Listing}
+\begin{python}
+    # Example Python Listing
+    class RNN(nn.Module):
+
+    def __init__(self, input_size, hidden_size, src_embed, generator, LSTM=True):
+    """
+    Inputs:
+    - `input_size`: a positive integer corresponding to the size of the
+    word embeddings
+    - `hidden_size`: a positive integer representing the dimensionality of
+    the RNN's hidden state vector
+    - `src_embed`: an nn.Embedding object representing the lookup table for
+    input (source) sentences
+    - `generator`: a `Generator` object. Essentially a linear mapping
+    followed by a softmax. You should not call it within this class; it
+    is called in the SimpleLossCompute class above
+    """
+    super(RNN, self).__init__()
+    # `input_size`, `hidden_size`, and `output_size` are all int.
+
+    self.hidden_size = hidden_size
+    self.src_embed = src_embed
+    self.generator = generator
+    self.use_lstm = LSTM
+    # hint: unless you choose to implement the RNN update equations yourself
+    #       you will want a `self.rnn` module that does that for you, which
+    #       is where the RNNCell/LSTMCell/GRUCell modules come in handy
+
+    self.rnn = nn.RNNCell(input_size, hidden_size, bias=False, device=device)
+    self.lstm = nn.LSTMCell(input_size, hidden_size, device=device)
+\end{python}

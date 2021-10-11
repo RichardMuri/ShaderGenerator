@@ -1,0 +1,67 @@
+\documentclass[a4paper, 12pt]{report}
+
+%%%%%%%%%%%%
+% Packages %
+%%%%%%%%%%%%
+
+\usepackage[english]{babel}
+\usepackage{silence}
+%Disable all warnings issued by latex starting with "You have..."
+\WarningFilter{latex}{You have requested package}
+\WarningFilter{latex}{Font shape}
+\WarningFilter{latex}{Some font shapes were not available}
+\usepackage[noheader]{../packages/sleek}
+\usepackage{../packages/sleek-title}
+\usepackage{../packages/sleek-theorems}
+\usepackage{../packages/sleek-listings}
+\usepackage{../packages/pythonhighlight}
+\usepackage{graphicx}
+% \usepackage{biblatex}
+
+%%%%%%%%%%%%%%
+% Title-page %
+%%%%%%%%%%%%%%
+
+\logo{../resources/png/mit_logo.png}
+\institute{Massachusetts Institute of Technology}
+\faculty{6.864 Advanced Natural Language Processing}
+\department{Professors Jacob Andres and Yoon Kim}
+\title{Generating Graphics Shaders from English Descriptions}
+\subtitle{Final Project Proposal}
+\author{\textit{Authors}\\Richard Muri, Saaketh Vedantam, Justin Yao, Vivienne Zhang}
+% \context{Well, I was bored...}
+\date{\today}
+
+%%%%%%%%%%%%%%%%
+% Bibliography %
+%%%%%%%%%%%%%%%%
+
+% \addbibresource{../resources/bib/references.bib}
+\addbibresource{../references.bib}
+
+%%%%%%%%%%
+% Others %
+%%%%%%%%%%
+
+
+
+\FrameTBStyle{latex}
+
+\def\tbs{\textbackslash}
+
+%%%%%%%%%%%%
+% Document %
+%%%%%%%%%%%%
+
+\begin{document}
+\maketitle
+\romantableofcontents
+%\section*{Acknowledgement}
+\input{content.tex}
+
+
+
+\printbibliography
+
+
+\end{document}
