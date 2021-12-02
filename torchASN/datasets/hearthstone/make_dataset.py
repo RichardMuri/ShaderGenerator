@@ -25,6 +25,7 @@ def load_dataset(split, transition_system):
 
         src_line = src_line.rstrip()
         tgt_line = tgt_line.rstrip()
+        tgt_line = tgt_line.replace("§", "\n")
 
         src_toks = src_line.split()
         tgt_toks = tgt_line.split()
