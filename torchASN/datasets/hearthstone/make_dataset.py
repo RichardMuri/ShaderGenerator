@@ -1,17 +1,17 @@
+from datasets.utils import build_dataset_vocab
+from grammar.python3.python3_transition_system import *
+from components.dataset import Example
+from grammar.grammar import Grammar
+import pickle
+import numpy as np
 from os.path import join
 import sys
 sys.path.append('.')
-import numpy as np
-import pickle
-from grammar.grammar import Grammar
 
 # from grammar.hypothesis import Hypothesis, ApplyRuleAction
 # from components.action_info import get_action_infos
-from components.dataset import Example
 # from components.vocab import VocabEntry, Vocab
 
-from grammar.python3.python3_transition_system import *
-from datasets.utils import build_dataset_vocab
 
 def load_dataset(split, transition_system):
 
@@ -38,7 +38,8 @@ def load_dataset(split, transition_system):
         tgt_action_tree = transition_system.get_action_tree(tgt_ast)
 
         # sanity check
-        ast_from_action = transition_system.build_ast_from_actions(tgt_action_tree)
+        ast_from_action = transition_system.build_ast_from_actions(
+            tgt_action_tree)
         assert transition_system.compare_ast(ast_from_action, tgt_ast)
 
         tgt_from_hyp = transition_system.ast_to_surface_code(ast_from_action)
@@ -46,11 +47,11 @@ def load_dataset(split, transition_system):
         # sanity check
         # tgt_action_infos = get_action_infos(src_toks, tgt_actions)
         example = Example(idx=idx,
-                        src_toks=src_toks,
-                        tgt_actions=tgt_action_tree,
-                        tgt_toks=tgt_toks,
-                        tgt_ast=tgt_ast,
-                        meta=None)
+                          src_toks=src_toks,
+                          tgt_actions=tgt_action_tree,
+                          tgt_toks=tgt_toks,
+                          tgt_ast=tgt_ast,
+                          meta=None)
 
         examples.append(example)
     return examples
@@ -58,7 +59,8 @@ def load_dataset(split, transition_system):
 
 def make_dataset():
 
-    grammar = Grammar.from_text(open('data/hearthstone/python_3_7_12_asdl.txt').read())
+    grammar = Grammar.from_text(
+        open('torchASN/data/hearthstone/python_3_7_12_asdl.txt').read())
     transition_system = Python3TransitionSystem(grammar)
 
     train_set = load_dataset("train", transition_system)
@@ -68,10 +70,11 @@ def make_dataset():
     vocab = build_dataset_vocab(train_set, transition_system, src_cutoff=2)
 
     # cache decision using vocab can be done in train
-    pickle.dump(train_set, open('data/hearthstone/train.bin', 'wb'))
-    pickle.dump(dev_set, open('data/hearthstone/dev.bin', 'wb'))
-    pickle.dump(test_set, open('data/hearthstone/test.bin', 'wb'))
-    pickle.dump(vocab, open('data/hearthstone/vocab.bin', 'wb'))
+    pickle.dump(train_set, open('torchASN/data/hearthstone/train.bin', 'wb'))
+    pickle.dump(dev_set, open('torchASN/data/hearthstone/dev.bin', 'wb'))
+    pickle.dump(test_set, open('torchASN/data/hearthstone/test.bin', 'wb'))
+    pickle.dump(vocab, open('torchASN/data/hearthstone/vocab.bin', 'wb'))
+
 
 if __name__ == "__main__":
     make_dataset()
