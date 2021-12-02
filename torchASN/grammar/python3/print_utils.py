@@ -1,5 +1,5 @@
 from astor.source_repr import split_lines
-from astor.string_repr import _properly_indented, string_triplequote_repr
+from astor.string_repr import special_unicode, _properly_indented, string_triplequote_repr
 
 
 def long_pretty_source(source):
