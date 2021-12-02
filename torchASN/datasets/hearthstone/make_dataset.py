@@ -7,7 +7,6 @@ from grammar.python3.python3_transition_system import *
 from datasets.utils import build_dataset_vocab
 import sys
 sys.path.append('.')
-# sys.path.append('torchASN/')
 
 
 # from grammar.hypothesis import Hypothesis, ApplyRuleAction
@@ -26,7 +25,7 @@ def load_dataset(split, transition_system):
 
         src_line = src_line.rstrip()
         tgt_line = tgt_line.rstrip()
-        tgt_line = tgt_line.replace("Â§", "\n")
+        tgt_line = tgt_line.replace("§", "\n")
 
         src_toks = src_line.split()
         tgt_toks = tgt_line.split()
@@ -62,7 +61,7 @@ def load_dataset(split, transition_system):
 def make_dataset():
 
     grammar = Grammar.from_text(
-        open('torchASN/data/hearthstone/python_3_9_9_asdl.txt').read())
+        open('torchASN/data/hearthstone/python_3_7_12_asdl.txt').read())
     transition_system = Python3TransitionSystem(grammar)
 
     train_set = load_dataset("train", transition_system)
