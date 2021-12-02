@@ -2,7 +2,7 @@
 ###### LaTeX STUFF ######
 
 
-__latexindent_temp.tex 
+__latexindent_temp.tex
 
 ## Core latex/pdflatex auxiliary files:
 *.aux
@@ -10,7 +10,7 @@ __latexindent_temp.tex
 *.log
 *.lot
 *.fls
-*.out
+## *.out
 *.toc
 *.fmt
 *.fot
