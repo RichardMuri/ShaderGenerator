@@ -3,11 +3,12 @@
 import ast
 
 import astor
-from .print_utils import long_pretty_source
+from .print_utils import double_quote_pretty_string, long_pretty_source
 
 from grammar.python3.py_asdl_helper import asdl_ast_to_python_ast, python_ast_to_asdl_ast
 from grammar.python3.py_utils import tokenize_code
 from grammar.transition_system import TransitionSystem, GenTokenAction
+
 
 # from common.registerable import Registrable
 
@@ -23,8 +24,8 @@ class Python3TransitionSystem(TransitionSystem):
 
     def ast_to_surface_code(self, asdl_ast):
         py_ast = asdl_ast_to_python_ast(asdl_ast, self.grammar)
-        code = astor.to_source(
-            py_ast, pretty_source=long_pretty_source).strip()
+        code = astor.to_source(py_ast, pretty_string=double_quote_pretty_string,
+                               pretty_source=long_pretty_source).strip()
 
         if code.endswith(':'):
             code += ' pass'
