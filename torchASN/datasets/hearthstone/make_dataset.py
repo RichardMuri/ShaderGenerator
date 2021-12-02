@@ -1,17 +1,18 @@
-from datasets.utils import build_dataset_vocab
-from grammar.python3.python3_transition_system import *
-from components.dataset import Example
-from grammar.grammar import Grammar
-import pickle
-import numpy as np
 from os.path import join
+import numpy as np
+import pickle
+from grammar.grammar import Grammar
+from components.dataset import Example
+from grammar.python3.python3_transition_system import *
+from datasets.utils import build_dataset_vocab
 import sys
 sys.path.append('.')
+# sys.path.append('torchASN/')
+
 
 # from grammar.hypothesis import Hypothesis, ApplyRuleAction
 # from components.action_info import get_action_infos
 # from components.vocab import VocabEntry, Vocab
-
 
 def load_dataset(split, transition_system):
 
@@ -25,7 +26,7 @@ def load_dataset(split, transition_system):
 
         src_line = src_line.rstrip()
         tgt_line = tgt_line.rstrip()
-        tgt_line = tgt_line.replace("§", "\n")
+        tgt_line = tgt_line.replace("Â§", "\n")
 
         src_toks = src_line.split()
         tgt_toks = tgt_line.split()
@@ -34,7 +35,7 @@ def load_dataset(split, transition_system):
         # sanity check
         reconstructed_tgt = transition_system.ast_to_surface_code(tgt_ast)
         print(tgt_line, reconstructed_tgt)
-        assert tgt_line == reconstructed_tgt
+        assert tgt_line.strip() == reconstructed_tgt.strip()
 
         tgt_action_tree = transition_system.get_action_tree(tgt_ast)
 
@@ -61,7 +62,7 @@ def load_dataset(split, transition_system):
 def make_dataset():
 
     grammar = Grammar.from_text(
-        open('torchASN/data/hearthstone/python_3_7_12_asdl.txt').read())
+        open('torchASN/data/hearthstone/python_3_9_9_asdl.txt').read())
     transition_system = Python3TransitionSystem(grammar)
 
     train_set = load_dataset("train", transition_system)
