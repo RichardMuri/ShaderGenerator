@@ -83,7 +83,7 @@ class ClassDefSingleLineSourceGenerator(SourceGenerator):
         self.conditional_write(paren_or_comma, '*', self.get_starargs(node))
         self.conditional_write(paren_or_comma, '**', self.get_kwargs(node))
         self.write(have_args and '):' or ':')
-        self.body(node.body)
         print(self.new_lines)
-        # if not self.indentation:
-        #     self.newline(extra=2)
+        self.body(node.body)
+        if not self.indentation:
+            self.newline(extra=2)
