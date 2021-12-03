@@ -11,7 +11,7 @@ def long_pretty_source(source):
 
 
 def double_quote_pretty_string(s, embedded, current_line, uni_lit=False,
-                  min_trip_str=20, max_line=100):
+                               min_trip_str=20, max_line=100):
     """There are a lot of reasons why we might not want to or
        be able to return a triple-quoted string.  We can always
        punt back to the default normal string.
@@ -60,13 +60,15 @@ def double_quote_pretty_string(s, embedded, current_line, uni_lit=False,
         pass
     return default
 
+
 class ClassDefSingleLineSourceGenerator(SourceGenerator):
 
     def __init__(self, indent_with, add_line_information=False,
-                 pretty_string=pretty_string,
+                 pretty_string=double_quote_pretty_string,
                  # constants
                  len=len, isinstance=isinstance, callable=callable):
-        super().__init__(indent_with, add_line_information=add_line_information, pretty_string=pretty_string, len=len, isinstance=isinstance, callable=callable)
+        super().__init__(indent_with, add_line_information=add_line_information, pretty_string=pretty_string, len=len,
+                         isinstance=isinstance, callable=callable)
 
         def write(*params):
             """ self.write is a closure for performance (to reduce the number
