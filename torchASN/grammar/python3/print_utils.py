@@ -62,47 +62,47 @@ def double_quote_pretty_string(s, embedded, current_line, uni_lit=False,
     return default
 
 
-class ClassDefSingleLineSourceGenerator(SourceGenerator):
-
-    def __init__(self, indent_with, add_line_information=False,
-                 pretty_string=double_quote_pretty_string,
-                 # constants
-                 len=len, isinstance=isinstance, callable=callable):
-        self.result = []
-        self.indent_with = indent_with
-        self.add_line_information = add_line_information
-        self.indentation = 0  # Current indentation level
-        self.new_lines = 0  # Number of lines to insert before next code
-        self.colinfo = 0, 0  # index in result of string containing linefeed, and
-                             # position of last linefeed in that string
-        self.pretty_string = pretty_string
-        AST = ast.AST
-
-        visit = self.visit
-        result = self.result
-        append = result.append
-
-        def write(*params):
-            """ self.write is a closure for performance (to reduce the number
-                of attribute lookups).
-            """
-            for item in params:
-                if isinstance(item, AST):
-                    visit(item)
-                elif callable(item):
-                    item()
-                else:
-                    if self.new_lines:
-                        if not self.indentation:
-                            self.new_lines -= 1
-                        append('\n' * self.new_lines)
-                        self.colinfo = len(result), 0
-                        append(self.indent_with * self.indentation)
-                        self.new_lines = 0
-                    if item:
-                        append(item)
-
-        self.write = write
+# class ClassDefSingleLineSourceGenerator(SourceGenerator):
+#
+#     def __init__(self, indent_with, add_line_information=False,
+#                  pretty_string=double_quote_pretty_string,
+#                  # constants
+#                  len=len, isinstance=isinstance, callable=callable):
+#         self.result = []
+#         self.indent_with = indent_with
+#         self.add_line_information = add_line_information
+#         self.indentation = 0  # Current indentation level
+#         self.new_lines = 0  # Number of lines to insert before next code
+#         self.colinfo = 0, 0  # index in result of string containing linefeed, and
+#                              # position of last linefeed in that string
+#         self.pretty_string = pretty_string
+#         AST = ast.AST
+#
+#         visit = self.visit
+#         result = self.result
+#         append = result.append
+#
+#         def write(*params):
+#             """ self.write is a closure for performance (to reduce the number
+#                 of attribute lookups).
+#             """
+#             for item in params:
+#                 if isinstance(item, AST):
+#                     visit(item)
+#                 elif callable(item):
+#                     item()
+#                 else:
+#                     if self.new_lines:
+#                         if not self.indentation:
+#                             self.new_lines -= 1
+#                         append('\n' * self.new_lines)
+#                         self.colinfo = len(result), 0
+#                         append(self.indent_with * self.indentation)
+#                         self.new_lines = 0
+#                     if item:
+#                         append(item)
+#
+#         self.write = write
 
     # def visit_ClassDef(self, node):
     #     have_args = []

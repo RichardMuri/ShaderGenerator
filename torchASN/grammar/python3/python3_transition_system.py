@@ -25,8 +25,10 @@ class Python3TransitionSystem(TransitionSystem):
     def ast_to_surface_code(self, asdl_ast):
         py_ast = asdl_ast_to_python_ast(asdl_ast, self.grammar)
         code = astor.to_source(py_ast, pretty_string=double_quote_pretty_string,
-                               pretty_source=long_pretty_source,
-                               source_generator_class=ClassDefSingleLineSourceGenerator).strip()
+                               pretty_source=long_pretty_source).strip()
+        # code = astor.to_source(py_ast, pretty_string=double_quote_pretty_string,
+        #                        pretty_source=long_pretty_source,
+        #                        source_generator_class=ClassDefSingleLineSourceGenerator).strip()
 
         if code.endswith(':'):
             code += ' pass'
