@@ -34,7 +34,7 @@ def load_dataset(split, transition_system):
         # sanity check
         reconstructed_tgt = transition_system.ast_to_surface_code(tgt_ast)
         print(tgt_line, reconstructed_tgt)
-        assert tgt_line.strip() == reconstructed_tgt.strip()
+        assert tgt_line == reconstructed_tgt
 
         tgt_action_tree = transition_system.get_action_tree(tgt_ast)
 

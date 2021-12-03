@@ -1,3 +1,4 @@
+from astor import SourceGenerator
 from astor.source_repr import split_lines
 from astor.string_repr import special_unicode, basestring, _properly_indented, string_triplequote_repr
 
@@ -58,3 +59,30 @@ def double_quote_pretty_string(s, embedded, current_line, uni_lit=False,
     except Exception:
         pass
     return default
+
+class ClassDefSingleLineSourceGenerator(SourceGenerator):
+
+    def visit_ClassDef(self, node):
+        have_args = []
+
+        def paren_or_comma():
+            if have_args:
+                self.write(', ')
+            else:
+                have_args.append(True)
+                self.write('(')
+
+        self.decorators(node, 2)
+        self.statement(node, 'class %s' % node.name)
+        for base in node.bases:
+            self.write(paren_or_comma, base)
+        # keywords not available in early version
+        for keyword in self.get_keywords(node):
+            self.write(paren_or_comma, keyword.arg or '',
+                       '=' if keyword.arg else '**', keyword.value)
+        self.conditional_write(paren_or_comma, '*', self.get_starargs(node))
+        self.conditional_write(paren_or_comma, '**', self.get_kwargs(node))
+        self.write(have_args and '):' or ':')
+        self.body(node.body)
+        if not self.indentation:
+            self.newline(extra=1)
