@@ -33,7 +33,7 @@ def load_dataset(split, transition_system):
 
         # sanity check
         reconstructed_tgt = transition_system.ast_to_surface_code(tgt_ast)
-        reconstructed_tgt = reconstructed_tgt.replace("\n\n", "\n", 1).trim()
+        reconstructed_tgt = reconstructed_tgt.replace("\n\n", "\n", 1).strip()
         print(tgt_line, reconstructed_tgt)
         assert tgt_line == reconstructed_tgt
 
