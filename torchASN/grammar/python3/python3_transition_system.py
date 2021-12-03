@@ -3,7 +3,7 @@
 import ast
 
 import astor
-from .print_utils import double_quote_pretty_string, long_pretty_source, ClassDefSingleLineSourceGenerator
+from .print_utils import double_quote_pretty_string, long_pretty_source#, ClassDefSingleLineSourceGenerator
 
 from grammar.python3.py_asdl_helper import asdl_ast_to_python_ast, python_ast_to_asdl_ast
 from grammar.python3.py_utils import tokenize_code
