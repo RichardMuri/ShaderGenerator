@@ -1,3 +1,4 @@
+import ast
 from astor import SourceGenerator
 from astor.source_repr import split_lines
 from astor.string_repr import special_unicode, basestring, _properly_indented, string_triplequote_repr
@@ -67,8 +68,19 @@ class ClassDefSingleLineSourceGenerator(SourceGenerator):
                  pretty_string=double_quote_pretty_string,
                  # constants
                  len=len, isinstance=isinstance, callable=callable):
-        super().__init__(indent_with, add_line_information=add_line_information, pretty_string=pretty_string, len=len,
-                         isinstance=isinstance, callable=callable)
+        self.result = []
+        self.indent_with = indent_with
+        self.add_line_information = add_line_information
+        self.indentation = 0  # Current indentation level
+        self.new_lines = 0  # Number of lines to insert before next code
+        self.colinfo = 0, 0  # index in result of string containing linefeed, and
+                             # position of last linefeed in that string
+        self.pretty_string = pretty_string
+        AST = ast.AST
+
+        visit = self.visit
+        result = self.result
+        append = result.append
 
         def write(*params):
             """ self.write is a closure for performance (to reduce the number
