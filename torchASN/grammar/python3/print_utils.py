@@ -83,7 +83,19 @@ class ClassDefSingleLineSourceGenerator(SourceGenerator):
         self.conditional_write(paren_or_comma, '*', self.get_starargs(node))
         self.conditional_write(paren_or_comma, '**', self.get_kwargs(node))
         self.write(have_args and '):' or ':')
-        print(self.new_lines)
         self.body(node.body)
-        if not self.indentation:
-            self.newline(extra=2)
+        # if not self.indentation:
+        #     self.newline(extra=2)
+
+    def visit_FunctionDef(self, node, is_async=False):
+        prefix = 'async ' if is_async else ''
+        # self.decorators(node, 1 if self.indentation else 2)
+        self.decorators(node, 1)
+        self.statement(node, '%sdef %s' % (prefix, node.name), '(')
+        self.visit_arguments(node.args)
+        self.write(')')
+        self.conditional_write(' -> ', self.get_returns(node))
+        self.write(':')
+        self.body(node.body)
+        # if not self.indentation:
+        #     self.newline(extra=2)
