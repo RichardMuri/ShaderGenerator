@@ -62,40 +62,68 @@ def double_quote_pretty_string(s, embedded, current_line, uni_lit=False,
 
 class ClassDefSingleLineSourceGenerator(SourceGenerator):
 
-    def visit_ClassDef(self, node):
-        have_args = []
+    def __init__(self, indent_with, add_line_information=False,
+                 pretty_string=pretty_string,
+                 # constants
+                 len=len, isinstance=isinstance, callable=callable):
+        super().__init__(indent_with, add_line_information=add_line_information, pretty_string=pretty_string, len=len, isinstance=isinstance, callable=callable)
 
-        def paren_or_comma():
-            if have_args:
-                self.write(', ')
-            else:
-                have_args.append(True)
-                self.write('(')
+        def write(*params):
+            """ self.write is a closure for performance (to reduce the number
+                of attribute lookups).
+            """
+            for item in params:
+                if isinstance(item, AST):
+                    visit(item)
+                elif callable(item):
+                    item()
+                else:
+                    if self.new_lines:
+                        if not self.indentation:
+                            self.new_lines -= 1
+                        append('\n' * self.new_lines)
+                        self.colinfo = len(result), 0
+                        append(self.indent_with * self.indentation)
+                        self.new_lines = 0
+                    if item:
+                        append(item)
 
-        self.decorators(node, 2)
-        self.statement(node, 'class %s' % node.name)
-        for base in node.bases:
-            self.write(paren_or_comma, base)
-        # keywords not available in early version
-        for keyword in self.get_keywords(node):
-            self.write(paren_or_comma, keyword.arg or '',
-                       '=' if keyword.arg else '**', keyword.value)
-        self.conditional_write(paren_or_comma, '*', self.get_starargs(node))
-        self.conditional_write(paren_or_comma, '**', self.get_kwargs(node))
-        self.write(have_args and '):' or ':')
-        self.body(node.body)
-        # if not self.indentation:
-        #     self.newline(extra=2)
+        self.write = write
 
-    def visit_FunctionDef(self, node, is_async=False):
-        prefix = 'async ' if is_async else ''
-        # self.decorators(node, 1 if self.indentation else 2)
-        self.decorators(node, 1)
-        self.statement(node, '%sdef %s' % (prefix, node.name), '(')
-        self.visit_arguments(node.args)
-        self.write(')')
-        self.conditional_write(' -> ', self.get_returns(node))
-        self.write(':')
-        self.body(node.body)
-        # if not self.indentation:
-        #     self.newline(extra=2)
+    # def visit_ClassDef(self, node):
+    #     have_args = []
+    #
+    #     def paren_or_comma():
+    #         if have_args:
+    #             self.write(', ')
+    #         else:
+    #             have_args.append(True)
+    #             self.write('(')
+    #
+    #     self.decorators(node, 2)
+    #     self.statement(node, 'class %s' % node.name)
+    #     for base in node.bases:
+    #         self.write(paren_or_comma, base)
+    #     # keywords not available in early version
+    #     for keyword in self.get_keywords(node):
+    #         self.write(paren_or_comma, keyword.arg or '',
+    #                    '=' if keyword.arg else '**', keyword.value)
+    #     self.conditional_write(paren_or_comma, '*', self.get_starargs(node))
+    #     self.conditional_write(paren_or_comma, '**', self.get_kwargs(node))
+    #     self.write(have_args and '):' or ':')
+    #     self.body(node.body)
+    #     # if not self.indentation:
+    #     #     self.newline(extra=2)
+    #
+    # def visit_FunctionDef(self, node, is_async=False):
+    #     prefix = 'async ' if is_async else ''
+    #     # self.decorators(node, 1 if self.indentation else 2)
+    #     self.decorators(node, 1)
+    #     self.statement(node, '%sdef %s' % (prefix, node.name), '(')
+    #     self.visit_arguments(node.args)
+    #     self.write(')')
+    #     self.conditional_write(' -> ', self.get_returns(node))
+    #     self.write(':')
+    #     self.body(node.body)
+    #     # if not self.indentation:
+    #     #     self.newline(extra=2)
