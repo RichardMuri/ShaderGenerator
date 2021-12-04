@@ -7,7 +7,7 @@ from .print_utils import double_quote_pretty_string, long_pretty_source#, ClassD
 
 from grammar.python3.py_asdl_helper import asdl_ast_to_python_ast, python_ast_to_asdl_ast
 from grammar.python3.py_utils import tokenize_code
-from grammar.transition_system import TransitionSystem, GenTokenAction
+from grammar.transition_system import TransitionSystem, ApplyRuleAction, GenTokenAction, ActionTree
 
 
 # from common.registerable import Registrable
