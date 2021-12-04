@@ -108,8 +108,13 @@ class Python3TransitionSystem(TransitionSystem):
             if field.cardinality == 'single':
                 field_nodes.append(self._get_action_tree(field.type, field.value))
             elif field.cardinality == 'optional':
-                field_nodes.append(self._get_action_tree(field.type, field.value))
+                if field.value is not None:
+                    field_nodes.append(self._get_action_tree(field.type, field.value))
+                else:
+                    # TODO: May possibly want to add a ReduceAction node
+                    pass
             else:
+                # TODO: May possibly want to add a ReduceAction node if len(field.value) == 0
                 for val in field.value:
                     field_nodes.append(self._get_action_tree(field.type, val))
         # composite type
