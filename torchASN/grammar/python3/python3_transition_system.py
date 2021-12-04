@@ -85,3 +85,32 @@ class Python3TransitionSystem(TransitionSystem):
         except:
             return False
         return True
+
+    # def get_action_tree(self, ast_tree):
+    #     fields = []
+    #     if ast_tree.production.type.is_primitive_type():
+    #         for x in ast_node.fields:
+    #     else:
+    #     return self._get_action_tree(ast_tree.production.type, ast_tree)
+
+    def _get_action_tree(self, dsl_type, ast_node):
+        if dsl_type.is_primitive_type():
+            assert isinstance(ast_node, str)
+            # print(ast_node, type(ast_node))
+            return ActionTree(GenTokenAction(dsl_type, ast_node))
+
+        # primitive type
+        # ast_node.value
+        action = ApplyRuleAction(dsl_type, ast_node.production)
+        field_nodes = []
+        # fields = [self._get_action_tree(x.field.type, x.value) for x in ast_node.fields]
+        for field in ast_node.fields:
+            if field.cardinality == 'single':
+                field_nodes.append(self._get_action_tree(field.type, field.value))
+            elif field.cardinality == 'optional':
+                field_nodes.append(self._get_action_tree(field.type, field.value))
+            else:
+                for val in field.value:
+                    field_nodes.append(self._get_action_tree(field.type, val))
+        # composite type
+        return ActionTree(action, field_nodes)
