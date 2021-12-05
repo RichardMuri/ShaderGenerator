@@ -57,8 +57,8 @@ def load_dataset(split, transition_system):
         reconstructed_tgt = reconstructed_tgt.replace("\n\n", "\n", 1)
         # reconstructed_tgt = reconstructed_tgt.replace("'True'", "True")
         # reconstructed_tgt = reconstructed_tgt.replace("'False'", "False")
-        print(tgt_line, reconstructed_tgt)
-        assert tgt_line.strip() == reconstructed_tgt.strip()
+        # print(tgt_line, reconstructed_tgt)
+        # assert tgt_line.strip() == reconstructed_tgt.strip()
 
         tgt_action_tree = transition_system.get_action_tree(tgt_ast)
 
@@ -68,6 +68,10 @@ def load_dataset(split, transition_system):
         assert transition_system.compare_ast(ast_from_action, tgt_ast)
 
         tgt_from_hyp = transition_system.ast_to_surface_code(ast_from_action)
+        tgt_from_hyp = tgt_from_hyp.replace("\n\n", "\n", 1)
+        tgt_from_hyp = elim_extraline(tgt_from_hyp)
+        print(tgt_line)
+        print(tgt_from_hyp)
         assert tgt_from_hyp.strip() == tgt_line.strip()
         # sanity check
         # tgt_action_infos = get_action_infos(src_toks, tgt_actions)
