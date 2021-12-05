@@ -42,7 +42,10 @@ def python_ast_to_asdl_ast(py_ast_node, grammar):
                     child_node = python_ast_to_asdl_ast(field_value, grammar)
                     asdl_field.add_value(child_node)
                 else:
-                    asdl_field.add_value(str(field_value))
+                    if isinstance(field_value, bool):
+                        asdl_field.add_value(field_value)
+                    else:
+                        asdl_field.add_value(str(field_value))
         # field with multiple cardinality
         elif field_value is not None:
                 if grammar.is_composite_type(field.type):
@@ -51,7 +54,11 @@ def python_ast_to_asdl_ast(py_ast_node, grammar):
                         asdl_field.add_value(child_node)
                 else:
                     for val in field_value:
-                        asdl_field.add_value(str(val))
+                        if isinstance(val, bool):
+                            asdl_field.add_value(val)
+                        else:
+                            asdl_field.add_value(str(val))
+                        # asdl_field.add_value(str(val))
 
         fields.append(asdl_field)
 

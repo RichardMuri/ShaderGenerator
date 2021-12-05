@@ -55,8 +55,8 @@ def load_dataset(split, transition_system):
         reconstructed_tgt = transition_system.ast_to_surface_code(tgt_ast)
         tgt_line = elim_extraline(tgt_line)
         reconstructed_tgt = reconstructed_tgt.replace("\n\n", "\n", 1)
-        reconstructed_tgt = reconstructed_tgt.replace("'True'", "True")
-        reconstructed_tgt = reconstructed_tgt.replace("'False'", "False")
+        # reconstructed_tgt = reconstructed_tgt.replace("'True'", "True")
+        # reconstructed_tgt = reconstructed_tgt.replace("'False'", "False")
         print(tgt_line, reconstructed_tgt)
         assert tgt_line.strip() == reconstructed_tgt.strip()
 

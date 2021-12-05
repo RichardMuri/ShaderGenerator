@@ -96,7 +96,12 @@ class Python3TransitionSystem(TransitionSystem):
 
     def _get_action_tree(self, dsl_type, ast_node):
         if dsl_type.is_primitive_type():
-            assert isinstance(ast_node, str)
+            # print('===================')
+            # print(type(ast_node))
+            # print(ast_node)
+            # if ast_node is None:
+            #     return ActionTree(GenTokenAction(dsl_type, None))
+            # assert isinstance(ast_node, str)
             # print(ast_node, type(ast_node))
             return ActionTree(GenTokenAction(dsl_type, ast_node))
 
