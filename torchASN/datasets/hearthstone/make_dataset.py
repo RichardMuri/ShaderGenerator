@@ -68,7 +68,7 @@ def load_dataset(split, transition_system):
         assert transition_system.compare_ast(ast_from_action, tgt_ast)
 
         tgt_from_hyp = transition_system.ast_to_surface_code(ast_from_action)
-        assert tgt_from_hyp == tgt_line
+        assert tgt_from_hyp.strip() == tgt_line.strip()
         # sanity check
         # tgt_action_infos = get_action_infos(src_toks, tgt_actions)
         example = Example(idx=idx,
