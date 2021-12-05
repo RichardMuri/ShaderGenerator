@@ -37,4 +37,4 @@ python -u scripts/hearthstone/train_baseline.py \
     --max_decode_step 70 \
     --save_to checkpoints/hearthstone/${model_file} 2>&1 | tee -a logs/${model_file}.log
 
-. scripts/hearthstone/test_baseline.sh checkpoints/hearthstone/${model_file} 2>&1 | tee -a logs/test.${model_file}.log
+# . scripts/hearthstone/test_baseline.sh checkpoints/hearthstone/${model_file} 2>&1 | tee -a logs/test.${model_file}.log
