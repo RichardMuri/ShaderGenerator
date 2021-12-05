@@ -13,6 +13,26 @@ sys.path.append('.')
 # from components.action_info import get_action_infos
 # from components.vocab import VocabEntry, Vocab
 
+def elim_extraline(string: str):
+    lines = string.splitlines(True)
+    prev_spaces = len(lines[0]) - len(lines[0].lstrip(' '))
+    spaces = 0
+    index = 1
+    for line in lines[1:]:
+        if(line is not '\n'):
+            spaces = len(line) - len(line.lstrip(' '))
+
+        prev_empty = lines[index-1] == '\n'
+        if(spaces == prev_spaces and prev_empty):
+            tmp = lines.pop(index-1)
+            index = index - 1
+        prev_spaces = spaces
+        index = index + 1
+
+    result = "".join(lines)
+    return result
+
+
 def load_dataset(split, transition_system):
 
     prefix = 'card2code/third_party/hearthstone/'
@@ -20,7 +40,7 @@ def load_dataset(split, transition_system):
     tgt_file = join(prefix, "{}_hs.out".format(split))
 
     examples = []
-    for idx, (src_line, tgt_line) in enumerate(zip(open(src_file), open(tgt_file))):
+    for idx, (src_line, tgt_line) in enumerate(zip(open(src_file, encoding="utf-8"), open(tgt_file, encoding="utf-8"))):
         print(idx)
 
         src_line = src_line.rstrip()
@@ -33,7 +53,10 @@ def load_dataset(split, transition_system):
 
         # sanity check
         reconstructed_tgt = transition_system.ast_to_surface_code(tgt_ast)
+        tgt_line = elim_extraline(tgt_line)
         reconstructed_tgt = reconstructed_tgt.replace("\n\n", "\n", 1)
+        reconstructed_tgt = reconstructed_tgt.replace("'True'", "True")
+        reconstructed_tgt = reconstructed_tgt.replace("'False'", "False")
         print(tgt_line, reconstructed_tgt)
         assert tgt_line.strip() == reconstructed_tgt.strip()
 
