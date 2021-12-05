@@ -58,11 +58,11 @@ class Example:
         self.meta = meta
 
 
-
 def sent_lens_to_mask(lens, max_length):
     mask = [[1 if j < l else 0 for j in range(max_length)] for l in lens]
     # match device of input
     return mask
+
 
 class Batch(object):
     def __init__(self, examples, grammar, vocab, train=True, cuda=False):
@@ -87,7 +87,8 @@ class Batch(object):
         sent_masks = sent_lens_to_mask(sent_lens, max_sent_len)
         sents = [
             [
-                self.vocab.src_vocab[e.src_toks[i]] if i < l else self.vocab.src_vocab['<pad>']
+                self.vocab.src_vocab[e.src_toks[i]
+                                     ] if i < l else self.vocab.src_vocab['<pad>']
                 for i in range(max_sent_len)
             ]
             for l, e in zip(sent_lens, self.examples)
@@ -102,8 +103,10 @@ class Batch(object):
         if isinstance(node, list):
             for item in node:
                 if item.action.action_type == "ApplyRule":
-                    candidate = self.grammar.get_prods_by_type(item.action.type)
-                    item.action.choice_index = candidate.index(item.action.choice)
+                    candidate = self.grammar.get_prods_by_type(
+                        item.action.type)
+                    item.action.choice_index = candidate.index(
+                        item.action.choice)
                     [self.compute_choice_index(x) for x in item.fields]
                 elif item.action.action_type == "GenToken":
                     token_vocab = self.vocab.primitive_vocabs[item.action.type]
@@ -113,18 +116,23 @@ class Batch(object):
                     # candidate = self.grammar.get_prods_by_type(item.action.type)
                     # item.action.choice_index = candidate.index(item.action.choice)
                 else:
-                    raise ValueError("invalid action type", item.action.action_type)
+                    raise ValueError("invalid action type",
+                                     item.action.action_type)
         else:
-            if node.action.action_type == "ApplyRule":
-                candidate = self.grammar.get_prods_by_type(node.action.type)
-                node.action.choice_index = candidate.index(node.action.choice)
-                [self.compute_choice_index(x) for x in node.fields]
-            elif node.action.action_type == "GenToken":
-                token_vocab = self.vocab.primitive_vocabs[node.action.type]
-                node.action.choice_index = token_vocab[node.action.choice]
-            elif node.action.action_type == "Reduce":
-                pass
-                # candidate = self.grammar.get_prods_by_type(node.action.type)
-                # node.action.choice_index = candidate.index(node.action.choice)
-            else:
-                raise ValueError("invalid action type", node.action.action_type)
+            if node.action is not None:
+                if node.action.action_type == "ApplyRule":
+                    candidate = self.grammar.get_prods_by_type(
+                        node.action.type)
+                    node.action.choice_index = candidate.index(
+                        node.action.choice)
+                    [self.compute_choice_index(x) for x in node.fields]
+                elif node.action.action_type == "GenToken":
+                    token_vocab = self.vocab.primitive_vocabs[node.action.type]
+                    node.action.choice_index = token_vocab[node.action.choice]
+                elif node.action.action_type == "Reduce":
+                    pass
+                    # candidate = self.grammar.get_prods_by_type(node.action.type)
+                    # node.action.choice_index = candidate.index(node.action.choice)
+                else:
+                    raise ValueError("invalid action type",
+                                     node.action.action_type)

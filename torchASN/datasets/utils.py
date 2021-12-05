@@ -41,10 +41,11 @@ def extract_primitive_tokens(root, transition_system):
                 else:
                     [_exract_primitive_tokens_helper(x) for x in item.fields]
         else:
-            if transition_system.grammar.is_primitive_type(node.action.type):
-                results.append((node.action.type, node.action.choice))
-            else:
-                [_exract_primitive_tokens_helper(x) for x in node.fields]
+            if(node.action is not None):
+                if transition_system.grammar.is_primitive_type(node.action.type):
+                    results.append((node.action.type, node.action.choice))
+                else:
+                    [_exract_primitive_tokens_helper(x) for x in node.fields]
     _exract_primitive_tokens_helper(root)
     return results
 

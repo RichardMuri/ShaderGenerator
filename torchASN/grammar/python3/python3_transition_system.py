@@ -3,7 +3,8 @@
 import ast
 
 import astor
-from .print_utils import double_quote_pretty_string, long_pretty_source#, ClassDefSingleLineSourceGenerator
+# , ClassDefSingleLineSourceGenerator
+from .print_utils import double_quote_pretty_string, long_pretty_source
 
 from grammar.python3.py_asdl_helper import asdl_ast_to_python_ast, python_ast_to_asdl_ast
 from grammar.python3.py_utils import tokenize_code
@@ -113,14 +114,18 @@ class Python3TransitionSystem(TransitionSystem):
         # fields = [self._get_action_tree(x.field.type, x.value) for x in ast_node.fields]
         for field in ast_node.fields:
             if field.cardinality == 'single':
-                field_nodes.append(self._get_action_tree(field.type, field.value))
+                field_nodes.append(
+                    self._get_action_tree(field.type, field.value))
             elif field.cardinality == 'optional':
                 if field.value is not None:
-                    field_nodes.append(self._get_action_tree(field.type, field.value))
+                    field_nodes.append(
+                        self._get_action_tree(field.type, field.value))
                 else:
                     # Add a ReduceAction node when Optional field is None
                     # field_nodes.append(ActionTree(ReduceAction(field.type, None)))
-                    field_nodes.append(ActionTree(None))
+                    # field_nodes.append(ActionTree(None))
+                    field_nodes.append(ActionTree(
+                        ApplyRuleAction(field.type, None)))
             else:
                 multi_field = []
                 for val in field.value:
@@ -129,7 +134,9 @@ class Python3TransitionSystem(TransitionSystem):
                 # Add a ReduceAction node if multi_field is empty
                 if len(multi_field) == 0:
                     # multi_field.append(ActionTree(ReduceAction(field.type, None)))
-                    field_nodes.append(ActionTree(None))
+                    # field_nodes.append(ActionTree(None))
+                    field_nodes.append(ActionTree(
+                        ApplyRuleAction(field.type, None)))
                 else:
                     field_nodes.append(multi_field)
         # composite type
@@ -142,7 +149,7 @@ class Python3TransitionSystem(TransitionSystem):
                 return []
             return [self.build_ast_from_actions(at) for at in action_tree]
         else:
-            if action_tree.action is None: # TODO for now only
+            if action_tree.action is None:  # TODO for now only
                 return None
 
             # Case for ReduceAction
@@ -170,17 +177,19 @@ class Python3TransitionSystem(TransitionSystem):
             # print(production)
             # print(len(action_tree.fields), len(production.constructor.fields))
             # if len(action_tree.fields) == 0:
-                # return production
-                # return []
-                # return AbstractSyntaxTree(production, [])
+            # return production
+            # return []
+            # return AbstractSyntaxTree(production, [])
+            if production is None:
+                return None
 
-
-            assert len(action_tree.fields) == len(production.constructor.fields)
+            assert len(action_tree.fields) == len(
+                production.constructor.fields)
 
             return AbstractSyntaxTree(production, realized_fields=[
-                    RealizedField(cnstr_f, self.build_ast_from_actions(action_f))
-                    for action_f, cnstr_f in zip (action_tree.fields, production.constructor.fields)
-                ])
+                RealizedField(cnstr_f, self.build_ast_from_actions(action_f))
+                for action_f, cnstr_f in zip(action_tree.fields, production.constructor.fields)
+            ])
 
         # realized_fields = []
         # # field_name_map = {}
