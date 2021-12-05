@@ -41,7 +41,7 @@ def load_dataset(split, transition_system):
 
     examples = []
     for idx, (src_line, tgt_line) in enumerate(zip(open(src_file, encoding="utf-8"), open(tgt_file, encoding="utf-8"))):
-        print(idx)
+        # print(idx)
 
         src_line = src_line.rstrip()
         tgt_line = tgt_line.rstrip()
