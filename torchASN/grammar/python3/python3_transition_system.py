@@ -7,7 +7,8 @@ from .print_utils import double_quote_pretty_string, long_pretty_source#, ClassD
 
 from grammar.python3.py_asdl_helper import asdl_ast_to_python_ast, python_ast_to_asdl_ast
 from grammar.python3.py_utils import tokenize_code
-from grammar.transition_system import TransitionSystem, ApplyRuleAction, GenTokenAction, ActionTree
+from grammar.transition_system import TransitionSystem, ApplyRuleAction, GenTokenAction, ReduceAction, ActionTree
+from grammar.dsl_ast import AbstractSyntaxTree, RealizedField
 
 
 # from common.registerable import Registrable
@@ -101,6 +102,7 @@ class Python3TransitionSystem(TransitionSystem):
 
         # primitive type
         # ast_node.value
+        # print(ast_node.production)
         action = ApplyRuleAction(dsl_type, ast_node.production)
         field_nodes = []
         # fields = [self._get_action_tree(x.field.type, x.value) for x in ast_node.fields]
@@ -111,11 +113,76 @@ class Python3TransitionSystem(TransitionSystem):
                 if field.value is not None:
                     field_nodes.append(self._get_action_tree(field.type, field.value))
                 else:
-                    # TODO: May possibly want to add a ReduceAction node
-                    pass
+                    # Add a ReduceAction node when Optional field is None
+                    field_nodes.append(ActionTree(ReduceAction(field.type, None)))
             else:
-                # TODO: May possibly want to add a ReduceAction node if len(field.value) == 0
+                multi_field = []
                 for val in field.value:
-                    field_nodes.append(self._get_action_tree(field.type, val))
+                    multi_field.append(self._get_action_tree(field.type, val))
+
+                # Add a ReduceAction node if multi_field is empty
+                if len(multi_field) == 0:
+                    multi_field.append(ActionTree(ReduceAction(field.type, None)))
+                field_nodes.append(multi_field)
         # composite type
         return ActionTree(action, field_nodes)
+
+    def build_ast_from_actions(self, action_tree):
+        if isinstance(action_tree, list):
+            # print(action_tree)
+            if isinstance(action_tree[0].action, ReduceAction):
+                return []
+            return [self.build_ast_from_actions(at) for at in action_tree]
+        else:
+
+            # Case for ReduceAction
+            if isinstance(action_tree.action, ReduceAction):
+                # print('-------------')
+                # print(action_tree)
+                # print(action_tree.action)
+                # print(action_tree.action.type)
+                # print(self.grammar[action_tree.action.type])
+                # print(action_tree.action.choice)
+                # print('##############')
+                # return AbstractSyntaxTree(production, [])
+                # return AbstractSyntaxTree(action_tree.action.type, [])
+                return None
+                # return AbstractSyntaxTree(production, [])
+
+            # Case for GenTokenAction
+            if isinstance(action_tree.action, GenTokenAction):
+                return action_tree.action.token
+
+            # Case for ApplyRuleAction
+            production = action_tree.action.production
+
+            # print("==============================")
+            # print(production)
+            # print(len(action_tree.fields), len(production.constructor.fields))
+            # if len(action_tree.fields) == 0:
+                # return production
+                # return []
+                # return AbstractSyntaxTree(production, [])
+
+
+            assert len(action_tree.fields) == len(production.constructor.fields)
+
+            return AbstractSyntaxTree(production, realized_fields=[
+                    RealizedField(cnstr_f, self.build_ast_from_actions(action_f))
+                    for action_f, cnstr_f in zip (action_tree.fields, production.constructor.fields)
+                ])
+
+        # realized_fields = []
+        # # field_name_map = {}
+        # # ActionTrees have "action" and "fields" params
+        # # "action" is GenTokenAction if field type is primitive, else ApplyRuleAction
+        # # "fields" is a list of ActionTrees
+        # for field in production.constructor.fields:
+        #     field_name_map[field.name] = RealizedField(field)
+        # for action_tree_node in action_tree.fields:
+        #     pass
+
+        # RealizedField have "action" and "fields" params
+
+        # asdl_node = AbstractSyntaxTree(production, realized_fields=realized_fields)
+        # return asdl_node

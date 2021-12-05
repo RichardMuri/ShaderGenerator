@@ -13,7 +13,7 @@ class Action(object):
 class PlaceHolderAction(Action):
     def __init__(self, type):
         super().__init__(type, None, 'PlaceHolder')
-    
+
     def __repr__(self):
         return 'PlaceHoder'
 
@@ -46,8 +46,11 @@ class GenTokenAction(Action):
 
 
 class ReduceAction(Action):
-   def __repr__(self):
-       return 'Reduce'
+    def __init__(self, type, token):
+        super().__init__(type, token, 'Reduce')
+
+    def __repr__(self):
+        return 'Reduce'
 
 class ActionTree:
     def __init__(self, action, fields=[]):
@@ -122,17 +125,17 @@ class TransitionSystem(object):
         fields = [self._get_action_tree(x.field.type, x.value) for x in ast_node.fields]
         # composite type
         return ActionTree(action, fields)
-    
+
     def build_ast_from_actions(self, action_tree):
         if action_tree.action is None: # TODO for now only
             return None
 
         if not action_tree.fields:
             return action_tree.action.choice
-        
+
         production = action_tree.action.choice
         assert len(action_tree.fields) == len(production.constructor.fields)
-        
+
         return AbstractSyntaxTree(production, realized_fields=[
                 RealizedField(cnstr_f, self.build_ast_from_actions(action_f))
                 for action_f, cnstr_f in zip (action_tree.fields, production.constructor.fields)
@@ -181,5 +184,3 @@ class TransitionSystem(object):
     #             raise ValueError
     #     else:
     #         return self.grammar[self.grammar.root_type]
-
- 
