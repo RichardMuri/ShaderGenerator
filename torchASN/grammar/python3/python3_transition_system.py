@@ -119,7 +119,8 @@ class Python3TransitionSystem(TransitionSystem):
                     field_nodes.append(self._get_action_tree(field.type, field.value))
                 else:
                     # Add a ReduceAction node when Optional field is None
-                    field_nodes.append(ActionTree(ReduceAction(field.type, None)))
+                    # field_nodes.append(ActionTree(ReduceAction(field.type, None)))
+                    field_nodes.append(ActionTree(None))
             else:
                 multi_field = []
                 for val in field.value:
@@ -127,8 +128,10 @@ class Python3TransitionSystem(TransitionSystem):
 
                 # Add a ReduceAction node if multi_field is empty
                 if len(multi_field) == 0:
-                    multi_field.append(ActionTree(ReduceAction(field.type, None)))
-                field_nodes.append(multi_field)
+                    # multi_field.append(ActionTree(ReduceAction(field.type, None)))
+                    field_nodes.append(ActionTree(None))
+                else:
+                    field_nodes.append(multi_field)
         # composite type
         return ActionTree(action, field_nodes)
 
@@ -139,6 +142,8 @@ class Python3TransitionSystem(TransitionSystem):
                 return []
             return [self.build_ast_from_actions(at) for at in action_tree]
         else:
+            if action_tree.action is None: # TODO for now only
+                return None
 
             # Case for ReduceAction
             if isinstance(action_tree.action, ReduceAction):
