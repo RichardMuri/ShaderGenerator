@@ -99,12 +99,24 @@ class Batch(object):
             [self.compute_choice_index(e.tgt_actions) for e in self.examples]
 
     def compute_choice_index(self, node):
-        if node.action.action_type == "ApplyRule":
-            candidate = self.grammar.get_prods_by_type(node.action.type)
-            node.action.choice_index = candidate.index(node.action.choice)
-            [self.compute_choice_index(x) for x in node.fields]
-        elif node.action.action_type == "GenToken":
-            token_vocab = self.vocab.primitive_vocabs[node.action.type]
-            node.action.choice_index = token_vocab[node.action.choice]
+        if isinstance(node, list):
+            for item in node:
+                if item.action.action_type == "ApplyRule":
+                    candidate = self.grammar.get_prods_by_type(item.action.type)
+                    item.action.choice_index = candidate.index(item.action.choice)
+                    [self.compute_choice_index(x) for x in item.fields]
+                elif item.action.action_type == "GenToken":
+                    token_vocab = self.vocab.primitive_vocabs[item.action.type]
+                    item.action.choice_index = token_vocab[item.action.choice]
+                else:
+                    raise ValueError("invalid action type", item.action.action_type)
         else:
-            raise ValueError("invalid action type", node.action.action_type)
+            if node.action.action_type == "ApplyRule":
+                candidate = self.grammar.get_prods_by_type(node.action.type)
+                node.action.choice_index = candidate.index(node.action.choice)
+                [self.compute_choice_index(x) for x in node.fields]
+            elif node.action.action_type == "GenToken":
+                token_vocab = self.vocab.primitive_vocabs[node.action.type]
+                node.action.choice_index = token_vocab[node.action.choice]
+            else:
+                raise ValueError("invalid action type", node.action.action_type)
