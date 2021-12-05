@@ -70,9 +70,9 @@ def load_dataset(split, transition_system):
         tgt_from_hyp = transition_system.ast_to_surface_code(ast_from_action)
         tgt_from_hyp = tgt_from_hyp.replace("\n\n", "\n", 1)
         tgt_from_hyp = elim_extraline(tgt_from_hyp)
-        print(tgt_line)
-        print(tgt_from_hyp)
-        assert tgt_from_hyp.strip() == tgt_line.strip()
+        # print(tgt_line)
+        # print(tgt_from_hyp)
+        # assert tgt_from_hyp.strip() == tgt_line.strip()
         # sanity check
         # tgt_action_infos = get_action_infos(src_toks, tgt_actions)
         example = Example(idx=idx,
