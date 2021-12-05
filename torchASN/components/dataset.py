@@ -109,8 +109,9 @@ class Batch(object):
                     token_vocab = self.vocab.primitive_vocabs[item.action.type]
                     item.action.choice_index = token_vocab[item.action.choice]
                 elif item.action.action_type == "Reduce":
-                    candidate = self.grammar.get_prods_by_type(item.action.type)
-                    item.action.choice_index = candidate.index(item.action.choice)
+                    pass
+                    # candidate = self.grammar.get_prods_by_type(item.action.type)
+                    # item.action.choice_index = candidate.index(item.action.choice)
                 else:
                     raise ValueError("invalid action type", item.action.action_type)
         else:
@@ -122,7 +123,8 @@ class Batch(object):
                 token_vocab = self.vocab.primitive_vocabs[node.action.type]
                 node.action.choice_index = token_vocab[node.action.choice]
             elif node.action.action_type == "Reduce":
-                candidate = self.grammar.get_prods_by_type(node.action.type)
-                node.action.choice_index = candidate.index(node.action.choice)
+                pass
+                # candidate = self.grammar.get_prods_by_type(node.action.type)
+                # node.action.choice_index = candidate.index(node.action.choice)
             else:
                 raise ValueError("invalid action type", node.action.action_type)
