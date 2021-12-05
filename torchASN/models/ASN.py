@@ -3,7 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import random
 from components.dataset import Batch
-from grammar.transition_system import ApplyRuleAction, GenTokenAction, ActionTree
+from grammar.transition_system import ApplyRuleAction, GenTokenAction, ActionTree, ReduceAction
 from grammar.hypothesis import Hypothesis
 import numpy as np
 import os
@@ -156,6 +156,10 @@ class ASNParser(nn.Module):
             score = -1 * scores.view([-1])[action_node.action.choice_index]
             # print("Primitive", score)
             return score
+
+        # ReduceAction denotes an empty field value in the parse tree; no need to score
+        if isinstance(action_node.action, ReduceAction):
+            return 0
 
         cnstr = action_node.action.choice.constructor
         comp_module = self.comp_type_dict[node_type.name]
