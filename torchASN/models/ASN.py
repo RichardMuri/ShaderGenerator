@@ -229,25 +229,28 @@ class ASNParser(nn.Module):
         # action_fields = [self._naive_parse(next_field.type, next_state, context_vecs, context_masks, depth+1)
         #                  for next_field, next_state in zip(cnstr.fields, cnstr_results)]
 
-        #=============================================
-        action_fields = []
-        for next_field, next_state in zip(cnstr.fields, cnstr_results):
-            if next_field.cardinality == 'single':
-                action_fields.append(self._naive_parse(next_field.type, next_state, context_vecs, context_masks, depth+1))
-            elif next_field.cardinality == 'optional':
-                if next_field.value is not None:
-                    action_fields.append(self._naive_parse(next_field.type, next_state, context_vecs, context_masks, depth+1))
-                else:
-                    action_fields.append(ActionTree(ReduceAction(next_field.type, None)))
-            else:
-                multi_field = []
-                for val in next_field.value:
-                    multi_field.append(self._naive_parse(next_field.type, next_state, context_vecs, context_masks, depth+1))
+        action_fields = [[self._naive_parse(next_field.type, next_state, context_vecs, context_masks, depth+1)] if next_field.cardinality == 'multiple' else self._naive_parse(next_field.type, next_state, context_vecs, context_masks, depth+1)
+                         for next_field, next_state in zip(cnstr.fields, cnstr_results)]
 
-                if len(multi_field) == 0:
-                    multi_field.append(ActionTree(ReduceAction(next_field.type, None)))
-                action_fields.append(multi_field)
-        # =================================================
+        # #=============================================
+        # action_fields = []
+        # for next_field, next_state in zip(cnstr.fields, cnstr_results):
+        #     if next_field.cardinality == 'single':
+        #         action_fields.append(self._naive_parse(next_field.type, next_state, context_vecs, context_masks, depth+1))
+        #     elif next_field.cardinality == 'optional':
+        #         if next_field.value is not None:
+        #             action_fields.append(self._naive_parse(next_field.type, next_state, context_vecs, context_masks, depth+1))
+        #         else:
+        #             action_fields.append(ActionTree(ReduceAction(next_field.type, None)))
+        #     else:
+        #         multi_field = []
+        #         for val in next_field.value:
+        #             multi_field.append(self._naive_parse(next_field.type, next_state, context_vecs, context_masks, depth+1))
+        #
+        #         if len(multi_field) == 0:
+        #             multi_field.append(ActionTree(ReduceAction(next_field.type, None)))
+        #         action_fields.append(multi_field)
+        # # =================================================
         return ActionTree(action, action_fields)
 
     def parse(self, ex):
