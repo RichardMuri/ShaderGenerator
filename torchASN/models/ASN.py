@@ -198,8 +198,8 @@ class ASNParser(nn.Module):
         # tgt_token = tgt
         contexts = self.attn(v_state[0].unsqueeze(0), context_vecs).squeeze(0)
         if depth > 9:
-            # return ActionTree(ReduceAction(node_type, None))
-            return ActionTree(None)
+            return ActionTree(ReduceAction(node_type, None))
+            # return ActionTree(None)
 
         if node_type.is_primitive_type():
             module = self.prim_type_dict[node_type.name]
