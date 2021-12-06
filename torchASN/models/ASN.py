@@ -114,6 +114,8 @@ class ASNParser(nn.Module):
         self.attn = LuongAttention(args.enc_hid_size, 2 * args.enc_hid_size)
         self.dropout = nn.Dropout(args.dropout)
 
+        self.max_naive_parse_depth = args.max_naive_parse_depth
+
     def score(self, examples):
         # for ex in examples:
         scores = [self._score(ex) for ex in examples]
@@ -197,7 +199,7 @@ class ASNParser(nn.Module):
         # else token needed
         # tgt_token = tgt
         contexts = self.attn(v_state[0].unsqueeze(0), context_vecs).squeeze(0)
-        if depth > 9:
+        if depth > self.max_naive_parse_depth:
             return ActionTree(ReduceAction(node_type, None))
             # return ActionTree(None)
 

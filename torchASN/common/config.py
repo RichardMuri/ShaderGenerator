@@ -36,6 +36,7 @@ def _add_train_args(parser):
     parser.add_argument('--log_every', type=int, help='log every iter')
     parser.add_argument('--run_val_after', type=int, default=5, help='run validation after')
     parser.add_argument('--max_decode_step', type=int, help='maximum decode step')
+    parser.add_argument('--max_naive_parse_depth', type=int, default=9, help='maximum naive parse depth')
 
 def parse_args(mode):
     parser = argparse.ArgumentParser()
@@ -52,7 +53,7 @@ def parse_args(mode):
         _add_test_args(parser)
     else:
         raise RuntimeError('unknown mode')
-    
+
     args = parser.parse_args()
     print(args)
     return args
