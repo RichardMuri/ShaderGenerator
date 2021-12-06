@@ -136,7 +136,7 @@ class Python3TransitionSystem(TransitionSystem):
         if isinstance(action_tree, list):
             # print(action_tree)
             if action_tree[0].action is None:
-                return None
+                return []
             if isinstance(action_tree[0].action, ReduceAction):
                 return []
             return [self.build_ast_from_actions(at) for at in action_tree]
