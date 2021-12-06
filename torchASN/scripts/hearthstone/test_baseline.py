@@ -46,13 +46,13 @@ def test(args):
         parse_results = []
         for ex in tqdm(test_set, desc='Decoding', file=sys.stdout, total=len(test_set)):
             parse_results.append(parser.parse(ex) )
-    # match_results = [ parser.transition_system.compare_ast(e.tgt_ast, r) for e, r in zip(test_set, parse_results)]
+    # match_results = [ parser.transition_system.compare_ast(r, e.tgt_ast) for r, e in zip(parse_results, test_set)]
     # match_acc = sum(match_results) * 1. / len(match_results)
     # print("Eval Acc", match_acc)bv
     act_tree_to_ast = lambda x: parser.transition_system.build_ast_from_actions(x)
     top_asts = [ act_tree_to_ast(x[0].action_tree) if x else None for x in parse_results]
     top_codes = [parser.transition_system.ast_to_surface_code(x) for x in top_asts]
-    # match_results = [ parser.transition_system.compare_ast(e.tgt_ast, r) for e, r in zip(test_set, top_asts)]
+    # match_results = [ parser.transition_system.compare_ast(r, e.tgt_ast) for r, e in zip(top_asts, test_set)]
     match_results = [ " ".join(e.tgt_toks) == r for e, r in zip(test_set, top_codes)]
     # top_asts = [parser.transition_system]
 

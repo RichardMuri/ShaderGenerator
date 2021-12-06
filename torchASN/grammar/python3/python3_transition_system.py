@@ -42,8 +42,15 @@ class Python3TransitionSystem(TransitionSystem):
         return code
 
     def compare_ast(self, hyp_ast, ref_ast):
-        hyp_code = self.ast_to_surface_code(hyp_ast)
+        hyp_code = None
         ref_reformatted_code = self.ast_to_surface_code(ref_ast)
+
+        # Try to parse hypothesis AST
+        try:
+            hyp_code = self.ast_to_surface_code(hyp_ast)
+        except:
+            # Return False if hypothesis parsing is unsuccessful
+            return False
 
         ref_code_tokens = tokenize_code(ref_reformatted_code)
         hyp_code_tokens = tokenize_code(hyp_code)
