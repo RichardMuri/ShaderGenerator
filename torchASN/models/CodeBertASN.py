@@ -144,7 +144,7 @@ class CodeBertASNParser(nn.Module):
         # context_embeddings=model(torch.tensor(tokens_ids)[None,:])[0]
 
         output = self.encoder(**tokenized_batch)
-        context_vecs, final_state = output[0], output[1]
+        context_vecs, final_state = output.last_hidden_state, None # TODO
 
         #since CodeBert doesn't give us a final state, we come up with a
         # representational vector for the final state
