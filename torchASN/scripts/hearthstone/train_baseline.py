@@ -68,7 +68,7 @@ def train(args):
             with torch.no_grad():
                 parse_results = [parser.naive_parse(ex) for ex in dev_set]
             match_results = [transition_system.compare_ast(
-                e.tgt_ast, r) for e, r in zip(dev_set, parse_results)]
+                r, e.tgt_ast) for r, e in zip(parse_results, dev_set)]
             match_acc = sum(match_results) * 1. / len(match_results)
             # print('Eval Acc', match_acc)
             print('[epoch {}] eval acc {:.3f}, eval time {:.0f}'.format(
