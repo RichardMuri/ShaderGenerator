@@ -90,7 +90,7 @@ class CodeBertASNParser(nn.Module):
         #     args.src_emb_size, args.enc_hid_size, args.dropout, True)
 
         #replace encoder with codeBERT
-        self.tokenizer = AutoTokenizer.from_pretrained("microsoft/codebert-base")
+        self.tokenizer = AutoTokenizer.from_pretrained("microsoft/codebert-base", add_prefix_space=True)
         self.encoder = AutoModel.from_pretrained("microsoft/codebert-base")
 
         self.transition_system = transition_system
