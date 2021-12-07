@@ -65,7 +65,7 @@ def sent_lens_to_mask(lens, max_length):
     return mask
 
 class Batch(object):
-    def __init__(self, examples, grammar, vocab, train=True, cuda=False):
+    def __init__(self, examples, grammar, vocab, train=True, cuda=False, build_all=True):
         self.examples = examples
 
         # self.src_sents = [e.src_sent for e in self.examples]
@@ -75,26 +75,30 @@ class Batch(object):
         self.vocab = vocab
         self.cuda = cuda
         self.train = train
-        self.build_input()
+        self.build_input(build_all)
 
     def __len__(self):
         return len(self.examples)
 
-    def build_input(self):
+    def build_input(self, build_all=True):
 
-        sent_lens = [len(x.src_toks) for x in self.examples]
-        max_sent_len = max(sent_lens)
-        sent_masks = sent_lens_to_mask(sent_lens, max_sent_len)
-        sents = [
-            [
-                self.vocab.src_vocab[e.src_toks[i]] if i < l else self.vocab.src_vocab['<pad>']
-                for i in range(max_sent_len)
+        sent_lens = [len(x.src_toks) for x in self.examples] if build_all else None
+        max_sent_len = max(sent_lens) if build_all else 0
+        sent_masks = sent_lens_to_mask(sent_lens, max_sent_len) if build_all else None
+        sent = None
+        if build_all:
+            sents = [
+                [
+                    self.vocab.src_vocab[e.src_toks[i]] if i < l else self.vocab.src_vocab['<pad>']
+                    for i in range(max_sent_len)
+                ]
+                for l, e in zip(sent_lens, self.examples)
             ]
-            for l, e in zip(sent_lens, self.examples)
-        ]
-        self.sents = torch.LongTensor(sents)
-        self.sent_lens = torch.LongTensor(sent_lens)
-        self.sent_masks = torch.ByteTensor(sent_masks)
+        else:
+            sent = [ex.src_toks for ex in self.examples]
+        self.sents = torch.LongTensor(sents) if build_all else sent
+        self.sent_lens = torch.LongTensor(sent_lens) if build_all else None
+        self.sent_masks = torch.ByteTensor(sent_masks) if build_all else None
         if self.train:
             [self.compute_choice_index(e.tgt_actions) for e in self.examples]
 
