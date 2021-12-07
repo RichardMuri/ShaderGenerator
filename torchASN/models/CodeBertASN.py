@@ -146,7 +146,7 @@ class CodeBertASNParser(nn.Module):
         output = self.encoder(**tokenized_batch)
         context_vecs = output.last_hidden_state
         # final_state = (torch.sum(context_vecs, -1), torch.sum(context_vecs, -1))
-        final_state = (torch.mean(output.last_hidden_state, 1, keepdim=True), torch.mean(output.last_hidden_state, 1, keepdim=True))
+        final_state = (torch.squeeze(torch.mean(output.last_hidden_state, 1)), torch.squeeze(torch.mean(output.last_hidden_state, 1)))
         #since CodeBert doesn't give us a final state, we come up with a
         # representational vector for the final state
 
