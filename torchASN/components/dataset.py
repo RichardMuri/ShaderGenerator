@@ -102,8 +102,9 @@ class Batch(object):
 
         self.sents = torch.LongTensor(sents).to(
             self.device) if build_all else sent
+        # Lengths required to be on cpu by embedding module
         self.sent_lens = torch.LongTensor(
-            sent_lens).to(self.device) if build_all else None
+            sent_lens).cpu() if build_all else None
         self.sent_masks = torch.ByteTensor(
             sent_masks).to(self.device) if build_all else None
 
