@@ -82,12 +82,8 @@ class ASNParser(nn.Module):
         super().__init__()
 
         try:
-            self.cuda = args.cuda
+            self.device = args.device
         except:
-            self.cuda = False
-        if self.cuda:
-            self.device = 'cuda'
-        else:
             self.device = 'cpu'
 
         # encoder
@@ -136,7 +132,7 @@ class ASNParser(nn.Module):
         return torch.stack(scores)
 
     def _score(self, ex):
-        batch = Batch([ex], self.grammar, self.vocab, cuda=self.cuda)
+        batch = Batch([ex], self.grammar, self.vocab, device=self.device)
         context_vecs, encoder_outputs = self.encode(batch)
         init_state = encoder_outputs
 
@@ -194,7 +190,7 @@ class ASNParser(nn.Module):
 
     def naive_parse(self, ex):
         batch = Batch([ex], self.grammar, self.vocab,
-                      train=False, cuda=self.cuda)
+                      train=False, device=self.device)
         context_vecs, encoder_outputs = self.encode(batch)
         init_state = encoder_outputs
 
@@ -272,7 +268,7 @@ class ASNParser(nn.Module):
 
     def parse(self, ex):
         batch = Batch([ex], self.grammar, self.vocab,
-                      train=False, cuda=self.cuda)
+                      train=False, device=self.device)
         context_vecs, encoder_outputs = self.encode(batch)
         init_state = encoder_outputs
 
