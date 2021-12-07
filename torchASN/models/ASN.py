@@ -116,6 +116,11 @@ class ASNParser(nn.Module):
 
         self.max_naive_parse_depth = args.max_naive_parse_depth
 
+        try:
+            self.cuda = args.cuda
+        except:
+            self.cuda = False
+
     def score(self, examples):
         # for ex in examples:
         scores = [self._score(ex) for ex in examples]
@@ -123,7 +128,7 @@ class ASNParser(nn.Module):
         return torch.stack(scores)
 
     def _score(self, ex):
-        batch = Batch([ex], self.grammar, self.vocab)
+        batch = Batch([ex], self.grammar, self.vocab, cuda=self.cuda)
         context_vecs, encoder_outputs = self.encode(batch)
         init_state = encoder_outputs
 
@@ -180,7 +185,8 @@ class ASNParser(nn.Module):
         return score
 
     def naive_parse(self, ex):
-        batch = Batch([ex], self.grammar, self.vocab, train=False)
+        batch = Batch([ex], self.grammar, self.vocab,
+                      train=False, cuda=self.cuda)
         context_vecs, encoder_outputs = self.encode(batch)
         init_state = encoder_outputs
 
@@ -257,7 +263,8 @@ class ASNParser(nn.Module):
         return ActionTree(action, action_fields)
 
     def parse(self, ex):
-        batch = Batch([ex], self.grammar, self.vocab, train=False)
+        batch = Batch([ex], self.grammar, self.vocab,
+                      train=False, cuda=self.cuda)
         context_vecs, encoder_outputs = self.encode(batch)
         init_state = encoder_outputs
 
