@@ -8,6 +8,7 @@ from grammar.hypothesis import Hypothesis
 import numpy as np
 import os
 from common.config import update_args
+from transformers import AutoTokenizer, AutoModel
 
 
 class CompositeTypeModule(nn.Module):
@@ -76,14 +77,14 @@ class PrimitiveTypeModule(nn.Module):
         return F.log_softmax(self.w(x), 1)
 
 
-class ASNParser(nn.Module):
+class CodeBertASNParser(nn.Module):
     def __init__(self, args, transition_system, vocab):
         super().__init__()
 
         # encoder
         self.args = args
-        self.src_embedding = EmbeddingLayer(
-            args.src_emb_size, vocab.src_vocab.size(), args.dropout)
+        # self.src_embedding = EmbeddingLayer(
+        #     args.src_emb_size, vocab.src_vocab.size(), args.dropout)
 
         # self.encoder = RNNEncoder(
         #     args.src_emb_size, args.enc_hid_size, args.dropout, True)
@@ -91,8 +92,6 @@ class ASNParser(nn.Module):
         #replace encoder with codeBERT
         self.tokenizer = AutoTokenizer.from_pretrained("microsoft/codebert-base")
         self.encoder = AutoModel.from_pretrained("microsoft/codebert-base")
-
-
 
         self.transition_system = transition_system
         self.vocab = vocab
@@ -131,7 +130,7 @@ class ASNParser(nn.Module):
         return torch.stack(scores)
 
     def _score(self, ex):
-        batch = Batch([ex], self.grammar, self.vocab)
+        batch = Batch([ex], self.grammar, self.vocab, build_all=False)
         context_vecs, encoder_outputs = self.encode(batch)
         init_state = encoder_outputs
 
@@ -140,11 +139,11 @@ class ASNParser(nn.Module):
     def encode(self, batch):
 
         #replace with codeBert
-        tokens = batch
-        tokens_ids= self.tokenizer(tokens, is_split_into_words=True, padding = True, truncate = True)
+        tokenized_batch = self.tokenizer(batch.sents, is_split_into_words=True, padding=True, truncation=True, return_tensors="pt")
+        batch.sent_masks = tokenized_batch["attention_mask"]
         # context_embeddings=model(torch.tensor(tokens_ids)[None,:])[0]
-        context_vecs = self.encoder(torch.tensor(tokens_ids)[None,:])
-        
+        context_vecs = self.encoder(**tokenized_batch)
+
         #since CodeBert doesn't give us a final state, we come up with a
         # representational vector for the final state
 
@@ -201,7 +200,7 @@ class ASNParser(nn.Module):
         return score
 
     def naive_parse(self, ex):
-        batch = Batch([ex], self.grammar, self.vocab, train=False)
+        batch = Batch([ex], self.grammar, self.vocab, train=False, build_all=False)
         context_vecs, encoder_outputs = self.encode(batch)
         init_state = encoder_outputs
 
@@ -278,7 +277,7 @@ class ASNParser(nn.Module):
         return ActionTree(action, action_fields)
 
     def parse(self, ex):
-        batch = Batch([ex], self.grammar, self.vocab, train=False)
+        batch = Batch([ex], self.grammar, self.vocab, train=False, build_all=False)
         context_vecs, encoder_outputs = self.encode(batch)
         init_state = encoder_outputs
 
