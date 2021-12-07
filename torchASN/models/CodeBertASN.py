@@ -142,12 +142,12 @@ class CodeBertASNParser(nn.Module):
         tokenized_batch = self.tokenizer(batch.sents, is_split_into_words=True, padding=True, truncation=True, return_tensors="pt")
         batch.sent_masks = tokenized_batch["attention_mask"]
         # context_embeddings=model(torch.tensor(tokens_ids)[None,:])[0]
-        context_vecs = self.encoder(**tokenized_batch)
+        context_vecs, final_state = self.encoder(**tokenized_batch)
 
         #since CodeBert doesn't give us a final state, we come up with a
         # representational vector for the final state
 
-        final_state = torch.sum(context_vecs, -1)
+        # final_state = torch.sum(context_vecs, -1)
 
 
         # sent_lens = batch.sent_lens
