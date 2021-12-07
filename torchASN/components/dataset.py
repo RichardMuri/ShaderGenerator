@@ -96,9 +96,15 @@ class Batch(object):
             ]
         else:
             sent = [ex.src_toks for ex in self.examples]
-        self.sents = torch.LongTensor(sents) if build_all else sent
-        self.sent_lens = torch.LongTensor(sent_lens) if build_all else None
-        self.sent_masks = torch.ByteTensor(sent_masks) if build_all else None
+
+        if self.cuda:
+            self.sents = torch.LongTensor(sents).cuda() if build_all else sent
+            self.sent_lens = torch.LongTensor(sent_lens).cuda() if build_all else None
+            self.sent_masks = torch.ByteTensor(sent_masks).cuda() if build_all else None
+        else:
+            self.sents = torch.LongTensor(sents).cuda() if build_all else sent
+            self.sent_lens = torch.LongTensor(sent_lens).cuda() if build_all else None
+            self.sent_masks = torch.ByteTensor(sent_masks).cuda() if build_all else None
         if self.train:
             [self.compute_choice_index(e.tgt_actions) for e in self.examples]
 
