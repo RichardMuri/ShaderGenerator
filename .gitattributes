@@ -1,1 +1,2 @@
 shader_dataset/*.json filter=lfs diff=lfs merge=lfs -text
+trained_models/model.hearthstone.enc100.src100.field100.drop0.3.max_ep$100.batch32.lr$0.003.clip_grad5.0.bin filter=lfs diff=lfs merge=lfs -text
