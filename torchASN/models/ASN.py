@@ -1,4 +1,5 @@
 import torch
+from torch._C import device
 import torch.nn as nn
 import torch.nn.functional as F
 import random
@@ -80,12 +81,21 @@ class ASNParser(nn.Module):
     def __init__(self, args, transition_system, vocab):
         super().__init__()
 
+        try:
+            self.cuda = args.cuda
+        except:
+            self.cuda = False
+        if self.cuda:
+            self.device = 'cuda'
+        else:
+            self.device = 'cpu'
+
         # encoder
         self.args = args
         self.src_embedding = EmbeddingLayer(
-            args.src_emb_size, vocab.src_vocab.size(), args.dropout)
+            args.src_emb_size, vocab.src_vocab.size(), args.dropout).to(self.device)
         self.encoder = RNNEncoder(
-            args.src_emb_size, args.enc_hid_size, args.dropout, True)
+            args.src_emb_size, args.enc_hid_size, args.dropout, True).to(self.device)
         self.transition_system = transition_system
         self.vocab = vocab
         grammar = transition_system.grammar
@@ -95,31 +105,29 @@ class ASNParser(nn.Module):
         for dsl_type in grammar.composite_types:
             comp_type_modules.append((dsl_type.name,
                                       CompositeTypeModule(args, dsl_type, grammar.get_prods_by_type(dsl_type))))
-        self.comp_type_dict = nn.ModuleDict(comp_type_modules)
+        self.comp_type_dict = nn.ModuleDict(comp_type_modules).to(self.device)
 
         # init
         cnstr_type_modules = []
         for prod in grammar.productions:
             cnstr_type_modules.append((prod.constructor.name,
                                        ConstructorTypeModule(args, prod)))
-        self.const_type_dict = nn.ModuleDict(cnstr_type_modules)
+        self.const_type_dict = nn.ModuleDict(
+            cnstr_type_modules).to(self.device)
 
         prim_type_modules = []
         for prim_type in grammar.primitive_types:
             prim_type_modules.append((prim_type.name,
                                       PrimitiveTypeModule(args, prim_type, vocab.primitive_vocabs[prim_type])))
-        self.prim_type_dict = nn.ModuleDict(prim_type_modules)
+        self.prim_type_dict = nn.ModuleDict(prim_type_modules).to(self.device)
 
-        self.v_lstm = nn.LSTM(args.enc_hid_size, args.enc_hid_size)
-        self.attn = LuongAttention(args.enc_hid_size, 2 * args.enc_hid_size)
-        self.dropout = nn.Dropout(args.dropout)
+        self.v_lstm = nn.LSTM(
+            args.enc_hid_size, args.enc_hid_size).to(self.device)
+        self.attn = LuongAttention(
+            args.enc_hid_size, 2 * args.enc_hid_size).to(self.device)
+        self.dropout = nn.Dropout(args.dropout).to(self.device)
 
         self.max_naive_parse_depth = args.max_naive_parse_depth
-
-        try:
-            self.cuda = args.cuda
-        except:
-            self.cuda = False
 
     def score(self, examples):
         # for ex in examples:
