@@ -147,7 +147,7 @@ class CodeBertASNParser(nn.Module):
         #since CodeBert doesn't give us a final state, we come up with a
         # representational vector for the final state
 
-        final_state = torch.sum(context_vecs, axis=-1)
+        final_state = torch.sum(context_vecs, -1)
 
 
         # sent_lens = batch.sent_lens
