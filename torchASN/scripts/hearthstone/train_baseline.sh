@@ -35,6 +35,7 @@ python -u scripts/hearthstone/train_baseline.py \
     --clip_grad ${clip_grad} \
     --log_every 50 \
     --max_decode_step 70 \
+    --max_naive_parse_depth 18 \
     --save_to checkpoints/hearthstone/${model_file} 2>&1 | tee -a logs/${model_file}.log
 
 # . scripts/hearthstone/test_baseline.sh checkpoints/hearthstone/${model_file} 2>&1 | tee -a logs/test.${model_file}.log

@@ -16,19 +16,19 @@ def train(args):
     if args.dev_file:
         dev_set = Dataset.from_bin_file(args.dev_file)
     else: dev_set = Dataset(examples=[])
-    
+
     vocab = pickle.load(open(args.vocab, 'rb'))
     grammar = Grammar.from_text(open(args.asdl_file).read())
     # transition_system = Registrable.by_name(args.transition_system)(grammar)
     transition_system = TurkTransitionSystem(grammar)
-    
-    parser = ASNParser(args, transition_system, vocab)    
+
+    parser = ASNParser(args, transition_system, vocab)
     nn_utils.glorot_init(parser.parameters())
 
     optimizer = optim.Adam(parser.parameters(), lr=args.lr)
     best_acc = 0.0
     log_every = args.log_every
-    
+
     train_begin = time.time()
     for epoch in range(1, args.max_epoch + 1):
         train_iter = 0
@@ -61,11 +61,11 @@ def train(args):
             parser.eval()
             with torch.no_grad():
                 parse_results = [parser.naive_parse(ex) for ex in dev_set]
-            match_results = [transition_system.compare_ast(e.tgt_ast, r) for e, r in zip(dev_set, parse_results)]
+            match_results = [transition_system.compare_ast(r, e.tgt_ast) for r, e in zip(parse_results, dev_set)]
             match_acc = sum(match_results) * 1. / len(match_results)
             # print('Eval Acc', match_acc)
             print('[epoch {}] eval acc {:.3f}, eval time {:.0f}'.format(epoch, match_acc, time.time() - eval_begin))
-            
+
             if match_acc >= best_acc:
                 best_acc = match_acc
                 parser.save(args.save_to)

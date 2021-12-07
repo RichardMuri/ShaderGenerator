@@ -145,6 +145,15 @@ class AbstractSyntaxTree(object):
 
         return node_num
 
+    @property
+    def depth(self):
+        depth = 0
+        for field in self.fields:
+            for val in field.as_value_list:
+                if isinstance(val, AbstractSyntaxTree):
+                    depth = max(depth, val.depth)
+        return depth + 1
+
 
 class RealizedField(Field):
     """wrapper of field realized with values"""
