@@ -161,7 +161,7 @@ class CodeBertASNParser(nn.Module):
 
         # # L * b * hidden,
         # # print(context_vecs.size(), final_state[0].size(), final_state[1].size())
-        return context_vecs, final_state
+        return context_vecs.transpose(0, 1), final_state
 
     def _score_node(self, node_type, v_state, action_node, context_vecs, context_masks):
 
