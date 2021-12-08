@@ -145,6 +145,7 @@ class CodeBertASNParser(nn.Module):
 
         output = self.encoder(**tokenized_batch)
         context_vecs = output.last_hidden_state
+        print(context_vecs.shape)
         # final_state = (torch.sum(context_vecs, -1), torch.sum(context_vecs, -1))
         final_state = (torch.mean(output.last_hidden_state, 1), torch.mean(output.last_hidden_state, 1))
         #since CodeBert doesn't give us a final state, we come up with a
@@ -170,7 +171,9 @@ class CodeBertASNParser(nn.Module):
             return sum(scores)
 
         v_output = self.dropout(v_state[0])
+        print(v_output.shape)
         contexts = self.attn(v_output.unsqueeze(0), context_vecs).squeeze(0)
+        print(contexts.shape)
 
         if node_type.is_primitive_type():
             module = self.prim_type_dict[node_type.name]
