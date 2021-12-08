@@ -49,9 +49,9 @@ class ConstructorTypeModule(nn.Module):
         inputs = self.dropout(inputs)
         contexts = contexts.expand([self.n_field, -1])
         inputs = self.w(torch.cat([inputs, contexts], dim=1)).unsqueeze(0)
-        v_state = (v_state[0].expand(self.n_field, -1).unsqueeze(0).contiguous(),
-                   v_state[1].expand(self.n_field, -1).unsqueeze(0).contiguous())
-        _, outputs = v_lstm(inputs.contiguous(), v_state)
+        v_state = (v_state[0].expand(self.n_field, -1).unsqueeze(0),
+                   v_state[1].expand(self.n_field, -1).unsqueeze(0))
+        _, outputs = v_lstm(inputs, v_state)
 
         hidden_states = outputs[0].unbind(1)
         cell_states = outputs[1].unbind(1)
@@ -462,10 +462,10 @@ class RNNEncoder(nn.Module):
             # as the hidden size in the encoder
             new_h = self.reduce_h_W(h_)
             new_c = self.reduce_c_W(c_)
-            h_t = (new_h, new_c)
+            h_t = (new_h.contiguous(), new_c)
         else:
             h, c = hn[0][0], hn[1][0]
-            h_t = (h, c)
+            h_t = (h.contiguous(), c)
         # print(max_length, output.size(), h_t[0].size(), h_t[1].size())
 
         output = self.dropout(output)
