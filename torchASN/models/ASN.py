@@ -45,15 +45,17 @@ class ConstructorTypeModule(nn.Module):
         # input: seq_len, batch, input_size
         # h_0 of shape (1, batch, hidden_size)
         # v_lstm(, v_state)
+        if self.n_field == 0:
+            return []
         inputs = self.field_embeddings.weight
         inputs = self.dropout(inputs)
-        contexts_ = contexts.expand([self.n_field, -1]).contiguous()
-        inputs_ = self.w(torch.cat([inputs, contexts_], dim=1)).unsqueeze(0)
-        v_state_ = (v_state[0].expand(self.n_field, -1).unsqueeze(0).contiguous(),
+        contexts = contexts.expand([self.n_field, -1]).contiguous()
+        inputs = self.w(torch.cat([inputs, contexts], dim=1)).unsqueeze(0)
+        v_state = (v_state[0].expand(self.n_field, -1).unsqueeze(0).contiguous(),
                    v_state[1].expand(self.n_field, -1).unsqueeze(0).contiguous())
         # v_state = (v_state[0].contiguous(), v_state[1].contiguous())
 
-        _, outputs = v_lstm(inputs_, v_state_)
+        _, outputs = v_lstm(inputs, v_state)
 
         hidden_states = outputs[0].unbind(1)
         cell_states = outputs[1].unbind(1)
