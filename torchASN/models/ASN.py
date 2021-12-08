@@ -156,7 +156,9 @@ class ASNParser(nn.Module):
             return sum(scores)
 
         v_output = self.dropout(v_state[0])
+        print(v_output.shape)
         contexts = self.attn(v_output.unsqueeze(0), context_vecs).squeeze(0)
+        print(contexts.shape)
 
         if node_type.is_primitive_type():
             module = self.prim_type_dict[node_type.name]
