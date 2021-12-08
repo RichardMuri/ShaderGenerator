@@ -53,7 +53,7 @@ class ConstructorTypeModule(nn.Module):
                    v_state[1].expand(self.n_field, -1).unsqueeze(0))
         v_state = (v_state[0].contiguous(), v_state[1].contiguous())
 
-        _, outputs = v_lstm(inputs.contiguous(), v_state)
+        _, outputs = v_lstm(inputs, v_state)
 
         hidden_states = outputs[0].unbind(1)
         cell_states = outputs[1].unbind(1)
