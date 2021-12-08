@@ -47,7 +47,7 @@ class ConstructorTypeModule(nn.Module):
         # v_lstm(, v_state)
         inputs = self.field_embeddings.weight
         inputs = self.dropout(inputs)
-        contexts = contexts.expand([self.n_field, -1])
+        contexts = contexts.expand([self.n_field, -1]).contiguous()
         inputs = self.w(torch.cat([inputs, contexts], dim=1)).unsqueeze(0)
         v_state = (v_state[0].expand(self.n_field, -1).unsqueeze(0),
                    v_state[1].expand(self.n_field, -1).unsqueeze(0))
