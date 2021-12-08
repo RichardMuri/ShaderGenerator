@@ -118,7 +118,7 @@ class CodeBertASNParser(nn.Module):
         self.prim_type_dict = nn.ModuleDict(prim_type_modules)
 
         self.v_lstm = nn.LSTM(args.enc_hid_size, args.enc_hid_size)
-        self.attn = LuongAttention(args.enc_hid_size, 2 * args.enc_hid_size)
+        self.attn = LuongAttention(args.enc_hid_size, args.enc_hid_size)  # TODO: Change 2 * args to args
         self.dropout = nn.Dropout(args.dropout)
 
         self.max_naive_parse_depth = args.max_naive_parse_depth
@@ -146,7 +146,7 @@ class CodeBertASNParser(nn.Module):
         output = self.encoder(**tokenized_batch)
         context_vecs = output.last_hidden_state
         # final_state = (torch.sum(context_vecs, -1), torch.sum(context_vecs, -1))
-        final_state = (torch.squeeze(torch.mean(output.last_hidden_state, 1)), torch.squeeze(torch.mean(output.last_hidden_state, 1)))
+        final_state = (torch.mean(output.last_hidden_state, 1), torch.mean(output.last_hidden_state, 1))
         #since CodeBert doesn't give us a final state, we come up with a
         # representational vector for the final state
 
