@@ -91,7 +91,7 @@ class ASNParser(nn.Module):
         # encoder
         self.args = args
         self.src_embedding = EmbeddingLayer(
-            args.src_emb_size, vocab.src_vocab.size(), args.dropout).to(self.device)
+            args.src_emb_size, vocab.src_vocab.size(), args.dropout, device=args.device).to(self.device)
         self.encoder = RNNEncoder(
             args.src_emb_size, args.enc_hid_size, args.dropout, True).to(self.device)
         self.transition_system = transition_system
@@ -393,10 +393,10 @@ class ASNParser(nn.Module):
 
 
 class EmbeddingLayer(nn.Module):
-    def __init__(self, embedding_dim, full_dict_size, embedding_dropout_rate):
+    def __init__(self, embedding_dim, full_dict_size, embedding_dropout_rate, device):
         super(EmbeddingLayer, self).__init__()
-        self.embedding = nn.Embedding(full_dict_size, embedding_dim)
-        self.dropout = nn.Dropout(embedding_dropout_rate)
+        self.embedding = nn.Embedding(full_dict_size, embedding_dim).to(device)
+        self.dropout = nn.Dropout(embedding_dropout_rate).to(device)
 
         nn.init.uniform_(self.embedding.weight, -1, 1)
 
