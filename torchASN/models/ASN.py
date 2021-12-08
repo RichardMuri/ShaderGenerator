@@ -462,10 +462,10 @@ class RNNEncoder(nn.Module):
             # as the hidden size in the encoder
             new_h = self.reduce_h_W(h_)
             new_c = self.reduce_c_W(c_)
-            h_t = (new_h.contiguous(), new_c)
+            h_t = (new_h.contiguous(), new_c.contiguous())
         else:
             h, c = hn[0][0], hn[1][0]
-            h_t = (h.contiguous(), c)
+            h_t = (h.contiguous(), c.contiguous())
         # print(max_length, output.size(), h_t[0].size(), h_t[1].size())
 
         output = self.dropout(output)
