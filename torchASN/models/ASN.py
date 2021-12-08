@@ -47,10 +47,10 @@ class ConstructorTypeModule(nn.Module):
         # v_lstm(, v_state)
         inputs = self.field_embeddings.weight
         inputs = self.dropout(inputs)
-        contexts = contexts.expand([-1, self.n_field]).contiguous()
-        inputs_ = self.w(torch.cat([inputs, contexts], dim=1)).unsqueeze(0)
-        v_state_ = (v_state[0].expand(-1, self.n_field).unsqueeze(0).contiguous(),
-                   v_state[1].expand(-1, self.n_field).unsqueeze(0).contiguous())
+        contexts_ = contexts.expand([self.n_field, -1]).contiguous()
+        inputs_ = self.w(torch.cat([inputs, contexts_], dim=1)).unsqueeze(0)
+        v_state_ = (v_state[0].expand(self.n_field, -1).unsqueeze(0).contiguous(),
+                   v_state[1].expand(self.n_field, -1).unsqueeze(0).contiguous())
         # v_state = (v_state[0].contiguous(), v_state[1].contiguous())
 
         _, outputs = v_lstm(inputs_, v_state_)
