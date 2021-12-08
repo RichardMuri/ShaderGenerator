@@ -159,11 +159,11 @@ class ASNParser(nn.Module):
                 node_type, v_state, action, context_vecs, context_masks) for action in action_node]
             return sum(scores)
 
-        print(context_vecs.shape)
+        # print(context_vecs.shape)
         v_output = self.dropout(v_state[0])
         print(v_output.shape)
         contexts = self.attn(v_output.unsqueeze(0), context_vecs).squeeze(0)
-        print(contexts.shape)
+        # print(contexts.shape)
 
         if node_type.is_primitive_type():
             module = self.prim_type_dict[node_type.name]
