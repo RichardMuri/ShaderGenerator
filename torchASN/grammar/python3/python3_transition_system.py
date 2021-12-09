@@ -153,7 +153,7 @@ class Python3TransitionSystem(TransitionSystem):
                 return None
 
             if action_tree.fields is None or len(action_tree.fields) == 0:
-                return None
+                return []
 
             # Case for ReduceAction
             if isinstance(action_tree.action, ReduceAction):
