@@ -152,6 +152,9 @@ class Python3TransitionSystem(TransitionSystem):
             if action_tree.action is None: # TODO for now only
                 return None
 
+            if action_tree.fields is None or len(action_tree.fields) == 0:
+                return None
+
             # Case for ReduceAction
             if isinstance(action_tree.action, ReduceAction):
                 # print('-------------')
